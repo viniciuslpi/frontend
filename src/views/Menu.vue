@@ -20,10 +20,11 @@
 <script>
 export default {
   name: "Menu",
+  emits: ['changeTitle'],
   methods: {
-    navigate(route, desc) {
+    navigate(route, title) {
       this.$router.push(route);
-      this.$emit('changeTitle', desc);
+      this.$emit('changeTitle', title, this.showMenuButton);
     }
   },
   data() {
@@ -45,6 +46,7 @@ export default {
           },
         ],
       },
+      showMenuButton: true
     };
   },
 };

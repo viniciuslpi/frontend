@@ -1,6 +1,9 @@
 <template>
-  <Toolbar :title="title"/>
-  <!-- :title="title" -->
+  <Toolbar
+    :title="title"
+    :showMenuButton="showMenuButton"
+    @changeTitle="changeTitle"
+  />
   <router-view @changeTitle="changeTitle"></router-view>
 </template>
 <script >
@@ -10,23 +13,22 @@ import Menu from "./views/Menu.vue";
 export default {
   components: {
     Toolbar,
-    Menu
+    Menu,
   },
 
   data() {
     return {
-      title: String
-    }
-  },
-
-  mounted() {
-    this.title = 'Menu Principal';
+      title: "Menu Principal",
+      route: String,
+      showMenuButton: false,
+    };
   },
 
   methods: {
     changeTitle(text) {
+      this.showMenuButton = !this.showMenuButton;
       this.title = text;
-    }
+    },
   },
 };
 </script>
