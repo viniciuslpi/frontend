@@ -34,24 +34,22 @@
 <script>
 
 import { ref } from 'vue'
-// import axios from 'axios'
+import axios from 'axios'
 
-const stringOptions = [
-  { label: 'Rogério Falcão Rueda', value: 1 },
-  { label: 'Camila Rosa', value: 2 },
-  { label: 'Estevão Rueda', value: 3 },
-  { label: 'Vitor Ramalho', value: 4 },
-  { label: 'Maria Olivia', value: 5 },
-]
+// var stringOptions = [
+//   { label: 'Rogério Falcão Rueda', value: 1 },
+//   { label: 'Camila Rosa', value: 2 },
+//   { label: 'Estevão Rueda', value: 3 },
+//   { label: 'Vitor Ramalho', value: 4 },
+//   { label: 'Maria Olivia', value: 5 },
+// ]
 
 export default {
   name: "Recepcao",
-  // async setup () {
-    setup () {
+   setup () {
     const options = ref(stringOptions)
     const codigo = ref("");
-
-    // const ret = await axios.get('/api');
+    var stringOptions = [] 
 
     return {
       model: ref(null),
@@ -68,8 +66,8 @@ export default {
 
       updateFn(val) {
         if (val && typeof val === "object") {
-          console.log(codigo)
-          codigo.value = val.value
+          console.log(val)
+          codigo.value = val.label
         }
       },
 
@@ -87,10 +85,13 @@ export default {
           return
         }
 
-        update(() => {
-          const needle = val.toLowerCase()
-          options.value = stringOptions.filter(v => v.label.toLowerCase().indexOf(needle) > -1);
+        update(async () => {
+          stringOptions   = await axios.get(`/api/recepcao/v1/pessoas/${val}`)
+          const { data }  = stringOptions
+          const needle    = val.toLowerCase()
+          options.value   = data.filter(v => v.label.toLowerCase().indexOf(needle) > -1);
         })
+
       }
     }
   }
