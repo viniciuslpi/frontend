@@ -3,9 +3,6 @@
     <q-toolbar-title> TEMS </q-toolbar-title>
     <q-toolbar-title>{{ title }}</q-toolbar-title>
     <q-btn rounded color="yellow" label="Menu" class="text-black" @click="navigate(menuTitle)" v-show="showMenuButton" />
-    <q-btn flat round dense>
-      <q-icon name="more_vert" />
-    </q-btn>
   </q-toolbar>
 </template>
 <script>
