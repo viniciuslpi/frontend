@@ -2,7 +2,7 @@
   <div class="q-pa-md">
     <q-form @submit="onSubmit" class="q-gutter-md" style="width: 50%;margin: auto;">
 
-      <q-select behavior="menu" outlined v-model="inputEntidade" use-input hide-selected fill-input input-debounce="0"
+      <q-select behavior="menu" outlined v-model="inputEntidade" use-input hide-selected fill-input input-debounce="200"
         :options="options" @filter="filterFn" @update:model-value="updateFn"
         hint="Minimum 3 characters to trigger filtering" style="width: 100%; padding-bottom: 32px" label="Entidade">
         <template v-slot:no-option>
@@ -22,14 +22,15 @@
 <script>
 
 import { ref } from "vue";
+import axios from "axios";
 
-var stringOptions = [
-  { label: 'Cigano Don Carlos Ramirez', value: 1 },
-  { label: 'Cigano Julio Del Toro', value: 2 },
-  { label: 'Zequinha Boiadeiro', value: 3 },
-  { label: 'Augusto Irineu', value: 4 },
-  { label: 'Baiano Zé do Coco', value: 5 },
-]
+// var stringOptions = [
+//   { label: 'Cigano Don Carlos Ramirez', value: 1 },
+//   { label: 'Cigano Julio Del Toro', value: 2 },
+//   { label: 'Zequinha Boiadeiro', value: 3 },
+//   { label: 'Augusto Irineu', value: 4 },
+//   { label: 'Baiano Zé do Coco', value: 5 },
+// ]
 
 
 export default {
@@ -37,9 +38,9 @@ export default {
   name: "Baixa",
   setup() {
     const options = ref(stringOptions)
-    const inputNumAtendimento = ref("");
-    const inputEntidade = ref("")
-    // var stringOptions = [] 
+    const inputNumAtendimento = ref(null);
+    const inputEntidade = ref(null)
+    var stringOptions = []
 
     return {
       inputEntidade,
@@ -60,10 +61,17 @@ export default {
         }
 
         update(async () => {
-          // stringOptions   = await axios.get(`/api/recepcao/v1/pessoas/${val}`)
-          // const { data }  = stringOptions
+          stringOptions = await axios.get(`/api/recepcao/v1/entidades`)
+          const { rows } = stringOptions.data;
+          const data = [];
+
+          rows.map(item => {
+            const label = item.nome
+            data.push(label)
+          })
+
           const needle = val.toLowerCase()
-          options.value = stringOptions.filter(v => v.label.toLowerCase().indexOf(needle) > -1);
+          options.value = data.filter(v => v.toLowerCase().indexOf(needle) > -1);
         })
 
       },
@@ -73,9 +81,14 @@ export default {
           entidade: inputEntidade.value,
           atendimento: inputNumAtendimento.value
         }
-        console.log(formData);
-        inputEntidade.value = null
-        inputNumAtendimento.value = null
+
+        if(inputEntidade.value == null || inputNumAtendimento.value == null) {
+          console.log(">>> Os campos precisam estar preenchidos");
+        } else {
+          console.log(">>> Baixa de Senha Realizada");
+          console.log(formData);
+          inputNumAtendimento.value = null
+        }
       },
 
 
