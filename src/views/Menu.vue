@@ -1,19 +1,10 @@
 <template>
   <div class="q-pa-md row content-start q-gutter-md">
-    <q-card
-      bordered
-      class="my-card col-3 q-pa-sm"
-      v-for="item in menu.items"
-      v-bind:key="item.title"
-      @click="navigate(item.route, item.desc)"
-    >
-      <q-card-title>
-        <q-icon large left :name="item.icon" size="sm"/>
-        <span class="title font-weight-light">{{ item.title }}</span>
-      </q-card-title>
-      <q-card-text class="headline font-weight-bold">
-        <blockquote>{{ item.desc }}</blockquote>
-      </q-card-text>
+    <q-card bordered class="my-card col-3 q-pa-sm" v-for="item in menu.items" v-bind:key="item.title"
+      @click="navigate(item.route, item.desc)">
+      <q-icon large left :name="item.icon" size="sm" />
+      <span class="title font-weight-light">{{ item.title }}</span>
+      <blockquote>{{ item.desc }}</blockquote>
     </q-card>
   </div>
 </template>
@@ -52,9 +43,7 @@ export default {
 };
 </script>
 <style scoped>
-
-.my-card{
+.my-card {
   cursor: pointer;
 }
-
 </style>

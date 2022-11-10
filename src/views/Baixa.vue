@@ -2,7 +2,7 @@
   <div class="q-pa-md">
     <q-form @submit="onSubmit" class="q-gutter-md" style="width: 50%;margin: auto;">
 
-      <q-select behavior="menu" outlined v-model="inputEntidade" use-input hide-selected fill-input input-debounce="200"
+      <q-select behavior="menu" outlined v-model="input.entidade" use-input hide-selected fill-input input-debounce="200"
         :options="options" @filter="filterFn" @update:model-value="updateFn"
         hint="Minimum 3 characters to trigger filtering" style="width: 100%; padding-bottom: 32px" label="Entidade">
         <template v-slot:no-option>
@@ -13,7 +13,7 @@
           </q-item>
         </template>
       </q-select>
-      <q-input v-model="inputNumAtendimento" label="Número do atendimento" outlined style="width: 100%;"
+      <q-input v-model="input.numAtendimento" label="Número do atendimento" outlined style="width: 100%;"
         hint="Minimum 3 characters to trigger filtering" />
       <q-btn type="submit" btn_size_rd_md color="primary" size="md" label="SALVAR" />
     </q-form>
@@ -21,36 +21,40 @@
 </template>
 <script>
 
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import axios from "axios";
-
-// var stringOptions = [
-//   { label: 'Cigano Don Carlos Ramirez', value: 1 },
-//   { label: 'Cigano Julio Del Toro', value: 2 },
-//   { label: 'Zequinha Boiadeiro', value: 3 },
-//   { label: 'Augusto Irineu', value: 4 },
-//   { label: 'Baiano Zé do Coco', value: 5 },
-// ]
-
 
 export default {
 
   name: "Baixa",
   setup() {
-    const options = ref(stringOptions)
-    const inputNumAtendimento = ref(null);
-    const inputEntidade = ref(null)
-    var stringOptions = []
+    const options = ref(stringOptions);
+    const input = ref({
+      numAtendimento: ref(null),
+      entidade: ref(null)
+    })
+    // const inputNumAtendimento = ref(null);
+    // const inputEntidade = ref(null);
+    var stringOptions = [];
+
+    onMounted(async () => {
+      try {
+        const response = await axios.get(`/api/recepcao/v1/entidades`);
+        const arrayEntidades = response.data.rows;
+        arrayEntidades.map(item => stringOptions.push(item.nome))
+      } catch (err) {
+        console.log(err);
+      }
+    })
 
     return {
-      inputEntidade,
+      input,
       options,
-      inputNumAtendimento,
 
       updateFn(val) {
         if (val && typeof val === "object") {
           console.log(val)
-          inputEntidade.value = val.label
+          input.value.entidade = val.label
         }
       },
 
@@ -61,33 +65,25 @@ export default {
         }
 
         update(async () => {
-          stringOptions = await axios.get(`/api/recepcao/v1/entidades`)
-          const { rows } = stringOptions.data;
-          const data = [];
-
-          rows.map(item => {
-            const label = item.nome
-            data.push(label)
-          })
-
           const needle = val.toLowerCase()
-          options.value = data.filter(v => v.toLowerCase().indexOf(needle) > -1);
+          options.value = stringOptions.filter(v => v.toLowerCase().indexOf(needle) > -1);
         })
 
       },
 
       onSubmit() {
         const formData = {
-          entidade: inputEntidade.value,
-          atendimento: inputNumAtendimento.value
+          entidade: input.value.entidade,
+          atendimento: input.value.numAtendimento
         }
 
-        if(inputEntidade.value == null || inputNumAtendimento.value == null) {
+
+        if (input.value.entidade == null || input.value.numAtendimento == null) {
           console.log(">>> Os campos precisam estar preenchidos");
         } else {
           console.log(">>> Baixa de Senha Realizada");
-          console.log(formData);
-          inputNumAtendimento.value = null
+          console.log(formData);  
+          input.value.numAtendimento = null
         }
       },
 

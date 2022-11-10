@@ -37,14 +37,6 @@
 import { ref } from 'vue'
 import axios from 'axios'
 
-// var stringOptions = [
-//   { label: 'Rogério Falcão Rueda', value: 1 },
-//   { label: 'Camila Rosa', value: 2 },
-//   { label: 'Estevão Rueda', value: 3 },
-//   { label: 'Vitor Ramalho', value: 4 },
-//   { label: 'Maria Olivia', value: 5 },
-// ]
-
 export default {
   name: "Recepcao",
    setup () {
@@ -58,16 +50,16 @@ export default {
       codigo,
 
       inputFn(val) {
-        console.log(val)
+        // console.log(val)
       },
 
       addFn(val) {
-        console.log(val)
+        // console.log(val)
       },
 
       updateFn(val) {
         if (val && typeof val === "object") {
-          console.log(val)
+          // console.log(val)
           codigo.value = val.label
         }
       },
