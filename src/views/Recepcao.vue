@@ -18,6 +18,7 @@
         hint="Minimum 3 characters to trigger filtering"
         style="width: 250px; padding-bottom: 32px"
         label="Standard"
+        behavior="menu"
       >
         <template v-slot:no-option>
           <q-item>
