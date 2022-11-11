@@ -11,6 +11,7 @@
         fill-input
         input-debounce="0"
         :options="options"
+        option-label="nome"        
         @filter="filterFn"
         @update:model-value="updateFn"
         @new-value="addFn"
@@ -22,9 +23,7 @@
       >
         <template v-slot:no-option>
           <q-item>
-            <q-item-section class="text-grey">
-              No results
-            </q-item-section>
+            <q-item-section class="text-grey"> No results </q-item-section>
           </q-item>
         </template>
       </q-select>
@@ -33,16 +32,15 @@
 </template>
 
 <script>
-
-import { ref } from 'vue'
-import axios from 'axios'
+import { ref } from "vue";
+import axios from "axios";
 
 export default {
   name: "Recepcao",
-   setup () {
-    const options = ref(stringOptions)
+  setup() {
+    const options = ref(stringOptions);
     const codigo = ref("");
-    var stringOptions = [] 
+    var stringOptions = [];
 
     return {
       model: ref(null),
@@ -60,11 +58,11 @@ export default {
       updateFn(val) {
         if (val && typeof val === "object") {
           // console.log(val)
-          codigo.value = val.label
+          codigo.value = val.nome;
         }
       },
 
-      filterFn (val, update, abort) {
+      filterFn(val, update, abort) {
         // codigo para tratamento da inserção de dado (novo cadastro)
         /*if (true) {
           update(() => {
@@ -74,19 +72,21 @@ export default {
         }*/
 
         if (val.length < 3) {
-          abort()
-          return
+          abort();
+          return;
         }
 
         update(async () => {
-          stringOptions   = await axios.get(`/api/recepcao/v1/pessoas/${val}`)
-          const { data }  = stringOptions
-          const needle    = val.toLowerCase()
-          options.value   = data.filter(v => v.label.toLowerCase().indexOf(needle) > -1);
-        })
-
-      }
-    }
-  }
-}
+          stringOptions = await axios.get(
+            `/api/recepcao/v1/pessoas/nome/${val}`
+          );
+          const needle = val.toLowerCase();
+          options.value = stringOptions.data.filter(
+            (v) => v.nome.toLowerCase().indexOf(needle) > -1
+          );
+        });
+      },
+    };
+  },
+};
 </script>
