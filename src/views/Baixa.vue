@@ -135,6 +135,7 @@ export default {
                       "Favor entrar em contato com o suporte"
                     );
                   } else {
+                    input.value.numAtendimento = null;
                     console.log("Atendimento atualizado");
 
                     // this.fields.id = "";
@@ -156,11 +157,6 @@ export default {
             }
           }
         }
-
-        // console.log(">>> Baixa de Senha Realizada");
-        // console.log(formData);
-        // input.value.numAtendimento = null
-        // }
       },
     };
   },
