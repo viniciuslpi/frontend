@@ -1,8 +1,17 @@
 <template>
   <q-toolbar class="bg-primary text-white">
     <q-toolbar-title> TEMS </q-toolbar-title>
-    <q-toolbar-title>{{ title }}</q-toolbar-title>
-    <q-btn rounded color="yellow" label="Menu" class="text-black" @click="navigate(menuTitle)" v-show="showMenuButton" />
+    <q-toolbar-title class="text-center">{{ title }}</q-toolbar-title>
+    <q-toolbar-title class="text-right">
+      <q-btn
+        rounded
+        color="yellow"
+        label="Menu"
+        class="text-black"
+        @click="navigate(menuTitle)"
+        v-show="showMenuButton"
+      />
+    </q-toolbar-title>
   </q-toolbar>
 </template>
 <script>
@@ -12,12 +21,12 @@ export default {
   data() {
     return {
       menuTitle: "Menu Principal",
-      menuButton: false
-    }
+      menuButton: false,
+    };
   },
   props: {
     title: String,
-    showMenuButton: Boolean
+    showMenuButton: Boolean,
   },
 
   methods: {
