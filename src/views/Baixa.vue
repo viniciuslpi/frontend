@@ -14,7 +14,7 @@
         use-input
         hide-selected
         fill-input
-        input-debounce="200"
+        input-debounce="0"
         :options="options"
         @filter="filterFn"
         @update:model-value="updateFn"
@@ -52,18 +52,22 @@ import axios from "axios";
 export default {
   name: "Baixa",
   setup() {
-    const options = ref([]);
+    var stringOptions = [];
+    const options = ref(stringOptions);
+    
     const input = ref({
       numAtendimento: ref(null),
       entidade: ref(null),
     });
-    var stringOptions = [];
+    
     var entidadeData  = {};
 
     onMounted(async () => {
       try {
         const response = await axios.get(`/api/recepcao/v1/entidades`);
         stringOptions = response.data.rows;
+        options.value = stringOptions
+        console.log(options.value);
       } catch (err) {
         console.log(err);
       }
@@ -81,10 +85,10 @@ export default {
       },
 
       filterFn(val, update, abort) {
-        if (val.length < 3) {
-          abort();
-          return;
-        }
+        // if (val.length < 3) {
+        //   abort();
+        //   return;
+        // }
 
         update(async () => {
           const needle = val.toLowerCase();
