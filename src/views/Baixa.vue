@@ -24,7 +24,7 @@
       >
         <template v-slot:no-option>
           <q-item>
-            <q-item-section class="text-grey"> No results </q-item-section>
+            <q-item-section class="text-grey"> Nenhum resultado foi encontrado </q-item-section>
           </q-item>
         </template>
       </q-select>
@@ -54,19 +54,19 @@ export default {
   setup() {
     var stringOptions = [];
     const options = ref(stringOptions);
-    
+
     const input = ref({
       numAtendimento: ref(null),
       entidade: ref(null),
     });
-    
-    var entidadeData  = {};
+
+    var entidadeData = {};
 
     onMounted(async () => {
       try {
         const response = await axios.get(`/api/recepcao/v1/entidades`);
         stringOptions = response.data.rows;
-        options.value = stringOptions
+        options.value = stringOptions;
         console.log(options.value);
       } catch (err) {
         console.log(err);
@@ -90,12 +90,15 @@ export default {
         //   return;
         // }
 
-        update(async () => {
-          const needle = val.toLowerCase();
-          options.value = stringOptions.filter(
-            (v) => v.nome.toLowerCase().indexOf(needle) > -1
-          );
-        });
+        setTimeout(() => {
+          update(async () => {
+            input.value.entidade = val.nome;
+            const needle = val.toLowerCase();
+            options.value = stringOptions.filter(
+              (v) => v.nome.toLowerCase().indexOf(needle) > -1
+            );
+          });
+        }, 1000);
       },
 
       async onSubmit() {
