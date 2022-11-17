@@ -53,6 +53,7 @@ export default {
   name: "Baixa",
   setup() {
     var stringOptions = [];
+    var entidadeData = {};
     const options = ref(stringOptions);
 
     const input = ref({
@@ -60,7 +61,6 @@ export default {
       entidade: ref(null),
     });
 
-    var entidadeData = {};
 
     onMounted(async () => {
       try {
@@ -115,11 +115,11 @@ export default {
           if (resp.data) {
             if (resp.status === 200) {
               let atendimento = resp.data;
-              // console.log(atendimento);
+              console.log(atendimento);
               let pessoa = await axios.get(
                 `/api/recepcao/v1/pessoas/${atendimento.pessoa_id}`
               );
-              // console.log(pessoa);
+              console.log(pessoa);
               if (atendimento.entidade_id) {
                 console.log("Atendimento já obteve baixa");
               } else {
