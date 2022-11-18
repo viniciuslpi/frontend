@@ -45,36 +45,24 @@
         label="SALVAR"
       />
     </q-form>
-
-    <!-- `Atendimento realizado em <b>${moment(atendimento.data).format('DD/MM/YYYY')}</b> para ${pessoa.data.nome}, número de Senha: ${atendimento.senha}`; -->
-
-    <div class="card-section" v-show="baixaSenha.ok">
-      <q-card flat bordered class="my-card">
-        <q-card-section>
-          <div class="text-h6">Baixa de senha realizada</div>
-        </q-card-section>
-
-        <q-card-section class="q-pt-none">
-          <p><strong>Data do atendimento: </strong> {{ baixaSenha.data }}</p>
-          <p><strong>Consulente: </strong> {{ baixaSenha.consulente }}</p>
-          <p><strong>Entidade: </strong> {{ baixaSenha.entidade }}</p>
-          <p><strong>Senha: </strong>{{ baixaSenha.senha }}</p>
-        </q-card-section>
-      </q-card>
-    </div>
+    <BaixaSenha :baixaSenha="baixaSenha"/>
   </div>
 </template>
 <script>
 import { ref, onMounted } from "vue";
 import axios from "axios";
 import moment from "moment";
+import BaixaSenha from "../components/BaixaSenha.vue";
 
 export default {
   name: "Baixa",
+  components: {
+    BaixaSenha
+  },
   setup() {
     var stringOptions = [];
-    var entidadeData = {};
-    const options = ref(stringOptions);
+    var entidadeData  = {};
+    const options     = ref(stringOptions);
 
     const input = ref({
       numAtendimento: ref(null),
@@ -196,12 +184,6 @@ export default {
 };
 </script>
 <style scoped>
-.my-card {
-  width: 35%;
-  /* max-width: 250px; */
-  margin: auto;
-}
-
 .formulario {
   padding-bottom: 50px;
   padding-top: 50px;
