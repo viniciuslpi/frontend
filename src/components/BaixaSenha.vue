@@ -5,7 +5,9 @@
         <div class="text-h6">Baixa de senha realizada</div>
       </q-card-section>
 
-      <q-card-section class="q-pt-none">
+      <q-separator inset />
+
+      <q-card-section class="q-pt-md">
         <p><strong>Data do atendimento: </strong> {{ baixaSenha.data }}</p>
         <p><strong>Consulente: </strong> {{ baixaSenha.consulente }}</p>
         <p><strong>Entidade: </strong> {{ baixaSenha.entidade }}</p>
