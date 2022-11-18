@@ -2,8 +2,8 @@
   <div class="q-pa-md">
     <q-form
       @submit="onSubmit"
-      class="q-gutter-md"
-      style="width: 50%; margin: auto"
+      class="formulario"
+      style="width: 35%; margin: auto"
     >
       <q-select
         behavior="menu"
@@ -19,12 +19,14 @@
         @filter="filterFn"
         @update:model-value="updateFn"
         hint="Minimum 3 characters to trigger filtering"
-        style="width: 100%; padding-bottom: 32px"
+        style="width: 100%; padding-bottom: 35px"
         label="Entidade"
       >
         <template v-slot:no-option>
           <q-item>
-            <q-item-section class="text-grey"> Nenhum resultado foi encontrado </q-item-section>
+            <q-item-section class="text-grey">
+              Nenhum resultado foi encontrado
+            </q-item-section>
           </q-item>
         </template>
       </q-select>
@@ -32,7 +34,7 @@
         v-model="input.numAtendimento"
         label="Número do atendimento"
         outlined
-        style="width: 100%"
+        style="width: 100%; padding-bottom: 35px"
         hint="Minimum 3 characters to trigger filtering"
       />
       <q-btn
@@ -43,11 +45,29 @@
         label="SALVAR"
       />
     </q-form>
+
+    <!-- `Atendimento realizado em <b>${moment(atendimento.data).format('DD/MM/YYYY')}</b> para ${pessoa.data.nome}, número de Senha: ${atendimento.senha}`; -->
+
+    <div class="card-section" v-show="baixaSenha.ok">
+      <q-card flat bordered class="my-card">
+        <q-card-section>
+          <div class="text-h6">Baixa de senha realizada</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          <p><strong>Data do atendimento: </strong> {{ baixaSenha.data }}</p>
+          <p><strong>Consulente: </strong> {{ baixaSenha.consulente }}</p>
+          <p><strong>Entidade: </strong> {{ baixaSenha.entidade }}</p>
+          <p><strong>Senha: </strong>{{ baixaSenha.senha }}</p>
+        </q-card-section>
+      </q-card>
+    </div>
   </div>
 </template>
 <script>
 import { ref, onMounted } from "vue";
 import axios from "axios";
+import moment from "moment";
 
 export default {
   name: "Baixa",
@@ -61,13 +81,19 @@ export default {
       entidade: ref(null),
     });
 
+    const baixaSenha = ref({
+      data: ref(null),
+      consulente: ref(null),
+      entidade: ref(null),
+      senha: ref(null),
+      ok: ref(null),
+    });
 
     onMounted(async () => {
       try {
         const response = await axios.get(`/api/recepcao/v1/entidades`);
         stringOptions = response.data.rows;
         options.value = stringOptions;
-        console.log(options.value);
       } catch (err) {
         console.log(err);
       }
@@ -76,6 +102,7 @@ export default {
     return {
       input,
       options,
+      baixaSenha,
 
       updateFn(val) {
         if (val && typeof val === "object") {
@@ -106,61 +133,60 @@ export default {
           entidade: input.value.entidade,
           atendimento: input.value.numAtendimento,
         };
+        if (
+          !formData.atendimento ||
+          formData.atendimento <= 0 ||
+          isNaN(formData.atendimento)
+        ) {
+          console.log("Código inválido. Favor entrar em contato com o suporte");
+        } else {
+          try {
+            let resp = await axios.get(
+              `/api/recepcao/v1/atendimentos/${formData.atendimento}`
+            );
 
-        try {
-          let resp = await axios.get(
-            `/api/recepcao/v1/atendimentos/${formData.atendimento}`
-          );
-
-          if (resp.data) {
-            if (resp.status === 200) {
+            if (resp.data && resp.status === 200) {
               let atendimento = resp.data;
-              console.log(atendimento);
-              let pessoa = await axios.get(
-                `/api/recepcao/v1/pessoas/${atendimento.pessoa_id}`
-              );
-              console.log(pessoa);
               if (atendimento.entidade_id) {
                 console.log("Atendimento já obteve baixa");
               } else {
-                if (!formData.atendimento || formData.atendimento <= 0) {
+                let atendimentoUpdate = await axios.put(
+                  `/api/recepcao/v1/atendimentos/${formData.atendimento}`,
+                  { entidade_id: entidadeData.id }
+                );
+
+                if (atendimentoUpdate.status != 204) {
+                  console.error("ERRO NA GRAVAÇÃO");
                   console.log(
-                    "Id inválido",
-                    "Favor entrar em contato com o suporte"
+                    "Erro na gravação dos dados! Favor entrar em contato com o suporte"
                   );
                 } else {
-                  // console.log(entidadeData.id);
-                  let atendimentoUpdate = await axios.put(
-                    `/api/recepcao/v1/atendimentos/${formData.atendimento}`,
-                    { entidade_id: entidadeData.id }
-                  );
+                  input.value.numAtendimento = null;
+                  console.log("Baixa de senha realizada");
 
-                  if (atendimentoUpdate.status != 204) {
-                    console.error("ERRO NA GRAVAÇÃO");
-                    console.log(
-                      "Erro na gravação dos dados!",
-                      "Favor entrar em contato com o suporte"
+                  try {
+                    let pessoa = await axios.get(
+                      `/api/recepcao/v1/pessoas/${atendimento.pessoa_id}`
                     );
-                  } else {
-                    input.value.numAtendimento = null;
-                    console.log("Atendimento atualizado");
 
-                    // this.fields.id = "";
-                    // this.ok.show = true;
-                    // this.ok.data = moment(atendimento.data).format("DD/MM/YYYY");
-                    // this.ok.nome = pessoa.data.nome;
-                    // this.ok.senha = atendimento.senha;
-                    // this.okMessage = `Atendimento realizado em <b>${moment(atendimento.data).format('DD/MM/YYYY')}</b> para ${pessoa.data.nome}, número de Senha: ${atendimento.senha}`;
-                    // this.setTimeoutMessage();
+                    if (pessoa.data) {
+                      baixaSenha.value.data = moment(atendimento.data).format("DD/MM/YYYY");
+                      baixaSenha.value.consulente = pessoa.data.nome
+                      baixaSenha.value.entidade = formData.entidade
+                      baixaSenha.value.senha = atendimento.senha_id
+                      baixaSenha.value.ok = true;
+                    } else {
+                      console.log("Consulente não encontrado");
+                    }
+                  } catch (err) {
+                    console.log(err);
                   }
                 }
               }
             }
-          }
-        } catch (err) {
-          if (err.response) {
-            if (err.response.status === 404) {
-              console.log("Atendimento não encontrado", "");
+          } catch (err) {
+            if (err.response && err.response.status === 404) {
+              console.log("Atendimento não encontrado");
             }
           }
         }
@@ -169,3 +195,15 @@ export default {
   },
 };
 </script>
+<style scoped>
+.my-card {
+  width: 35%;
+  /* max-width: 250px; */
+  margin: auto;
+}
+
+.formulario {
+  padding-bottom: 50px;
+  padding-top: 50px;
+}
+</style>
