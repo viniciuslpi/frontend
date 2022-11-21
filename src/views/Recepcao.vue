@@ -4,7 +4,7 @@
       <div class="col-6">
         <q-select
           outlined
-          v-model="model"
+          v-model="form.nome"
           use-input
           hide-selected
           fill-input
@@ -28,22 +28,27 @@
         </q-select>
       </div>
       <div class="col">
-        <q-select outlined v-model="model" :options="options" label="Gênero" />
+        <q-select
+          outlined
+          v-model="form.genero"
+          :options="options"
+          label="Gênero"
+        />
       </div>
       <div class="col">
         <q-input
           outlined
-          v-model="text"
+          v-model="form.data"
           label="Nascimento: dd/mm/aaaa (calendario)"
         />
       </div>
     </div>
     <div class="row email">
       <div class="col">
-        <q-input outlined v-model="text" label="E-mail" />
+        <q-input outlined v-model="form.email" label="E-mail" />
       </div>
       <div class="col">
-        <q-input outlined v-model="text" label="Observação" />
+        <q-input outlined v-model="form.observacao" label="Observação" />
       </div>
     </div>
     <div class="row titulos">
@@ -57,33 +62,33 @@
     <div class="row endereco">
       <div class="row col-8">
         <div class="col-2">
-          <q-input outlined v-model="text" label="CEP" />
+          <q-input outlined v-model="form.cep" label="CEP" />
         </div>
         <div class="col">
-          <q-input outlined v-model="text" label="Logradouro" />
+          <q-input outlined v-model="form.logradouro" label="Logradouro" />
         </div>
       </div>
       <div class="col-1">
-        <q-input outlined v-model="text" label="Número" type="number" />
+        <q-input outlined v-model="form.numero" label="Número" type="number" />
       </div>
       <div class="col">
-        <q-input outlined v-model="text" label="Complemento" />
+        <q-input outlined v-model="form.complemento" label="Complemento" />
       </div>
     </div>
     <div class="row endereco-2">
       <div class="row col-8">
         <div class="col">
-          <q-input outlined v-model="text" label="Bairro" />
+          <q-input outlined v-model="form.bairro" label="Bairro" />
         </div>
         <div class="col">
-          <q-input outlined v-model="text" label="Cidade" />
+          <q-input outlined v-model="form.cidade" label="Cidade" />
         </div>
       </div>
       <div class="col">
-        <q-input outlined v-model="text" label="Estado" type="number" />
+        <q-input outlined v-model="form.estado" label="Estado" />
       </div>
       <div class="col">
-        <q-input outlined v-model="text" label="País" />
+        <q-input outlined v-model="form.pais" label="País" />
       </div>
     </div>
     <div class="row titulo">
@@ -92,23 +97,23 @@
     <div class="row contato">
       <div class="row col-8 telefones">
         <div class="col">
-          <q-input outlined v-model="text" label="Residencial" />
+          <q-input outlined v-model="form.residencial" label="Residencial" />
         </div>
         <div class="col">
-          <q-input outlined v-model="text" label="Comercial" />
+          <q-input outlined v-model="form.comercial" label="Comercial" />
         </div>
         <div class="col">
-          <q-input outlined v-model="text" label="Celular" />
+          <q-input outlined v-model="form.celular" label="Celular" />
         </div>
       </div>
       <div class="col">
-        <q-input outlined v-model="text" label="CPF" />
+        <q-input outlined v-model="form.cpf" label="CPF" />
       </div>
-      <div class="col-1">
-        <q-input outlined v-model="text" label="RG" />
+      <div class="col-2">
+        <q-input outlined v-model="form.rg" label="RG" />
       </div>
     </div>
-    <div class="row contato-2">
+    <div class="row botoes" style="margin: 10px 0 20px 0">
       <div class="col">
         <q-btn
           color="primary"
@@ -163,6 +168,7 @@
 
 <script>
 import { ref } from "vue";
+import axios from "axios";
 
 export default {
   name: "Recepcao",
@@ -172,11 +178,33 @@ export default {
     const text = ref("");
     var stringOptions = [];
 
+    const form = ref({
+      nome: ref(""),
+      genero: ref(""),
+      data: ref(null),
+      email: ref(""),
+      observacao: ref(""),
+      cep: ref(""),
+      logradouro: ref(""),
+      numero: ref(""),
+      complemento: ref(""),
+      bairro: ref(""),
+      cidade: ref(""),
+      estado: ref(""),
+      pais: ref(""),
+      residencial: ref(""),
+      comercial: ref(""),
+      celular: ref(""),
+      cpf: ref(""),
+      rg: ref(""),
+    })
+
     return {
       model: ref(null),
       options,
       codigo,
       text,
+      form,
 
       inputFn(val) {
         // console.log(val)
@@ -188,8 +216,24 @@ export default {
 
       updateFn(val) {
         if (val && typeof val === "object") {
-          // console.log(val)
-          codigo.value = val.nome;
+          form.value.nome = val.nome;
+          form.value.genero = val.genero;
+          form.value.data = val.data_nasc;
+          form.value.email = val.email;
+          form.value.observacao = val.observacao;
+          form.value.cep = val.cep;
+          form.value.logradouro = val.logradouro;
+          form.value.numero = val.numero;
+          form.value.complemento = val.complemento;
+          form.value.bairro = val.bairro;
+          form.value.cidade = val.cidade;
+          form.value.estado = val.uf;
+          form.value.pais = val.pais;
+          form.value.residencial = val.tel_resid;
+          form.value.comercial = val.tel_com;
+          form.value.celular = val.cel;
+          form.value.cpf = val.cpf;
+          form.value.rg = val.rg;
         }
       },
 
@@ -211,6 +255,7 @@ export default {
           stringOptions = await axios.get(
             `/api/recepcao/v1/pessoas/nome/${val}`
           );
+          console.log(stringOptions);
           const needle = val.toLowerCase();
           options.value = stringOptions.data.filter(
             (v) => v.nome.toLowerCase().indexOf(needle) > -1
@@ -222,7 +267,8 @@ export default {
 };
 </script>
 <style scoped>
-div[class*="col"] {
+div[class*="col"],
+h3 {
   /* border: solid 1px red; */
   margin: 5px;
 }
