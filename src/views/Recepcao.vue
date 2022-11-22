@@ -1,5 +1,5 @@
 <template>
-  <div class="q-pa-xl">
+  <div class="q-pa-xl" style="width: 80%; margin: auto">
     <div class="row nomes">
       <div class="col-6">
         <q-select
@@ -25,13 +25,20 @@
               <q-item-section class="text-grey"> No results </q-item-section>
             </q-item>
           </template>
+          <template v-if="form.nome" v-slot:append>
+            <q-icon
+              name="cancel"
+              @click.stop.prevent="reset"
+              class="cursor-pointer"
+            />
+          </template>
         </q-select>
       </div>
       <div class="col">
         <q-select
           outlined
           v-model="form.genero"
-          :options="options"
+          :options="options || ['Masculino', 'Feminino']"
           label="Gênero"
         />
       </div>
@@ -62,10 +69,10 @@
     <div class="row endereco">
       <div class="row col-8">
         <div class="col-2">
-          <q-input outlined v-model="form.cep" label="CEP" />
+          <q-input outlined v-model="form.cep" label="CEP"/>
         </div>
         <div class="col">
-          <q-input outlined v-model="form.logradouro" label="Logradouro" />
+          <q-input filled v-model="form.logradouro" label="Logradouro" disable/>
         </div>
       </div>
       <div class="col-1">
@@ -197,7 +204,7 @@ export default {
       celular: ref(""),
       cpf: ref(""),
       rg: ref(""),
-    })
+    });
 
     return {
       model: ref(null),
@@ -216,24 +223,7 @@ export default {
 
       updateFn(val) {
         if (val && typeof val === "object") {
-          form.value.nome = val.nome;
-          form.value.genero = val.genero;
-          form.value.data = val.data_nasc;
-          form.value.email = val.email;
-          form.value.observacao = val.observacao;
-          form.value.cep = val.cep;
-          form.value.logradouro = val.logradouro;
-          form.value.numero = val.numero;
-          form.value.complemento = val.complemento;
-          form.value.bairro = val.bairro;
-          form.value.cidade = val.cidade;
-          form.value.estado = val.uf;
-          form.value.pais = val.pais;
-          form.value.residencial = val.tel_resid;
-          form.value.comercial = val.tel_com;
-          form.value.celular = val.cel;
-          form.value.cpf = val.cpf;
-          form.value.rg = val.rg;
+          atualizarFormulario(form, val);
         }
       },
 
@@ -255,29 +245,72 @@ export default {
           stringOptions = await axios.get(
             `/api/recepcao/v1/pessoas/nome/${val}`
           );
-          console.log(stringOptions);
+          // console.log(stringOptions);
           const needle = val.toLowerCase();
           options.value = stringOptions.data.filter(
             (v) => v.nome.toLowerCase().indexOf(needle) > -1
           );
         });
       },
+
+      reset() {
+        limparFormulario(form);
+      },
     };
   },
 };
+
+export function limparFormulario(form) {
+  form.value.nome = null;
+  form.value.genero = null;
+  form.value.data = null;
+  form.value.email = null;
+  form.value.observacao = null;
+  form.value.cep = null;
+  form.value.logradouro = null;
+  form.value.numero = null;
+  form.value.complemento = null;
+  form.value.bairro = null;
+  form.value.cidade = null;
+  form.value.estado = null;
+  form.value.pais = null;
+  form.value.residencial = null;
+  form.value.comercial = null;
+  form.value.celular = null;
+  form.value.cpf = null;
+  form.value.rg = null;
+}
+
+export function atualizarFormulario(form, val) {
+  form.value.nome = val.nome;
+  form.value.genero = val.genero;
+  form.value.data = val.data_nasc;
+  form.value.email = val.email;
+  form.value.observacao = val.observacao;
+  form.value.cep = val.cep;
+  form.value.logradouro = val.logradouro;
+  form.value.numero = val.numero;
+  form.value.complemento = val.complemento;
+  form.value.bairro = val.bairro;
+  form.value.cidade = val.cidade;
+  form.value.estado = val.uf;
+  form.value.pais = val.pais;
+  form.value.residencial = val.tel_resid;
+  form.value.comercial = val.tel_com;
+  form.value.celular = val.cel;
+  form.value.cpf = val.cpf;
+  form.value.rg = val.rg;
+}
+
+
 </script>
 <style scoped>
 div[class*="col"],
 h3 {
-  /* border: solid 1px red; */
   margin: 5px;
 }
 
 .col-8 {
   margin: 0 !important;
-}
-
-.row {
-  /* margin-bottom: 10px; */
 }
 </style>
